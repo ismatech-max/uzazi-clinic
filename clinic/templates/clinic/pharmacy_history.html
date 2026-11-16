@@ -1,0 +1,38 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="flex flex-wrap gap-4 mb-6 print:hidden">
+    <a href="{% url 'pharmacy_dashboard' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-bold transition border">Wanaosubiri Malipo</a>
+    <a href="{% url 'pharmacy_stock' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-bold transition border">Stoo ya Dawa</a>
+    <a href="{% url 'pharmacy_history' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-md">Historia ya Mauzo</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-4 border-b border-gray-100 bg-gray-50"><h3 class="font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left"></i> Historia ya Mauzo Kamili</h3></div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-white text-xs text-gray-500 uppercase tracking-wider border-b">
+                <tr>
+                    <th class="p-4 font-medium">Tarehe & Muda</th>
+                    <th class="p-4 font-medium">Mgonjwa</th>
+                    <th class="p-4 font-medium">Dawa (Prescription)</th>
+                    <th class="p-4 font-medium">Kiasi Alicholipa (TSh)</th>
+                    <th class="p-4 font-medium">PV Zilizopatikana</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm divide-y divide-gray-100">
+                {% for sale in sales %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 text-xs text-gray-500">{{ sale.created_at|date:"d M Y, h:i A" }}</td>
+                    <td class="p-4 font-bold text-gray-800">{{ sale.patient.name }}<br><span class="font-normal text-xs text-gray-500">{{ sale.patient.phone }}</span></td>
+                    <td class="p-4 italic text-gray-600">{{ sale.consultation.prescribed_medicines }}</td>
+                    <td class="p-4 font-bold text-green-700">{{ sale.amount_paid }}</td>
+                    <td class="p-4 font-bold text-orange-600">{{ sale.pv_earned }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="p-8 text-center text-gray-400">Hakuna mauzo yaliyofanyika bado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

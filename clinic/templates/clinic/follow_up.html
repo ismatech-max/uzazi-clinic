@@ -1,0 +1,45 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
+    <h2 class="text-xl font-bold mb-4 text-[#0d5c35]"><i class="fa-solid fa-bullhorn"></i> Tuma SMS za Matangazo / Follow-Up</h2>
+    
+    <form method="POST" action="{% url 'send_follow_up' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-sm font-bold mb-2 text-gray-700">Chagua Walengwa:</label>
+            <select name="target" id="targetSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0d5c35]" onchange="togglePatientSelect()">
+                <option value="all">Wagonjwa Wote Waliopo Kwenye Mfumo</option>
+                <option value="individual">Mgonjwa Mmoja Mmoja</option>
+            </select>
+        </div>
+        
+        <div class="mb-4 hidden" id="singlePatientDiv">
+            <label class="block text-sm font-bold mb-2 text-gray-700">Tafuta Mgonjwa:</label>
+            <select name="patient_id" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0d5c35]">
+                {% for p in patients %}
+                <option value="{{ p.id }}">{{ p.name }} ({{ p.phone }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-bold mb-2 text-gray-700">Ujumbe Wako (Message):</label>
+            <textarea name="message" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0d5c35]" required placeholder="Andika ujumbe wa SMS hapa..."></textarea>
+            <p class="text-xs text-gray-400 mt-1">Ujumbe huu utatumwa kwa kutumia Jina 'UZAZI CARE'.</p>
+        </div>
+        
+        <button type="submit" class="w-full bg-[#0d5c35] text-white font-bold py-3 rounded-lg hover:bg-green-800 transition shadow-md">
+            <i class="fa-solid fa-paper-plane"></i> Tuma SMS Sasa
+        </button>
+    </form>
+</div>
+
+<script>
+    function togglePatientSelect() {
+        var target = document.getElementById('targetSelect').value;
+        var singleDiv = document.getElementById('singlePatientDiv');
+        if (target === 'individual') { singleDiv.classList.remove('hidden'); } 
+        else { singleDiv.classList.add('hidden'); }
+    }
+</script>
+{% endblock %}

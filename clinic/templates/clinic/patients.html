@@ -1,0 +1,52 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
+        <h3 class="text-lg font-bold text-[#0d5c35] mb-4"><i class="fa-solid fa-user-plus"></i> Sajili Mgonjwa Mpya</h3>
+        <form method="POST" action="{% url 'register_patient' %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-bold mb-2 text-gray-700">Jina Kamili:</label>
+                <input type="text" name="name" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-bold mb-2 text-gray-700">Namba ya Simu:</label>
+                <input type="text" name="phone" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg" required>
+            </div>
+            <button type="submit" class="w-full bg-[#0d5c35] text-white font-bold py-3 rounded-lg hover:bg-green-800">Sajili (Tuma SMS)</button>
+        </form>
+    </div>
+
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-4 border-b border-gray-100 bg-gray-50"><h3 class="font-bold text-gray-800">Orodha ya Wagonjwa</h3></div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="text-xs text-gray-500 uppercase bg-white">
+                    <tr><th class="p-4 border-b">ID</th><th class="p-4 border-b">Jina</th><th class="p-4 border-b">Simu</th><th class="p-4 border-b text-center">Hatua & Vifungo</th></tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-gray-100">
+                    {% for p in patients %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 font-bold text-[#0d5c35]">{{ p.patient_id_code }}</td>
+                        <td class="p-4 font-medium text-gray-800">{{ p.name }}</td>
+                        <td class="p-4 text-gray-600">{{ p.phone }}</td>
+                        <td class="p-4 text-center">
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <a href="{% url 'checkin_patient' p.id %}" class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-bold hover:bg-orange-200 text-[11px]"><i class="fa-solid fa-stethoscope"></i> Kwa Daktari</a>
+                                
+                                <a href="{% url 'follow_up_dashboard' %}" class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold hover:bg-blue-200 text-[11px]"><i class="fa-solid fa-bullhorn"></i> Follow Up</a>
+                                
+                                <form method="POST" action="{% url 'delete_patient' p.id %}" onsubmit="return confirm('Onyo: Je, una uhakika unataka kumfuta {{ p.name }} na rekodi zake zote?');" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold hover:bg-red-200 text-[11px]"><i class="fa-solid fa-trash"></i> Futa</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

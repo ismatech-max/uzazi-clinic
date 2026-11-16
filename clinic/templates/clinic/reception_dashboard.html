@@ -1,0 +1,113 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+
+<!-- WELCOME CARD -->
+<div class="bg-[#1e293b] rounded-2xl p-6 text-white shadow-md mb-6">
+    <p class="text-xs text-gray-400 font-semibold tracking-widest uppercase mb-1">Receptionist</p>
+    <h2 class="text-2xl font-bold mb-2">Hello {{ request.user.username|title|default:"Reception One" }}</h2>
+    <p class="text-sm text-gray-300 mb-6">Here's what's happening at Uzazi Clinic Care.</p>
+    
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'patients_list' %}" class="bg-[#2d3748] hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition cursor-pointer">
+            <i class="fa-solid fa-user-plus"></i> Add Patient
+        </a>
+        <a href="{% url 'appointments_list' %}" class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition shadow cursor-pointer">
+            <i class="fa-solid fa-plus"></i> New Appointment
+        </a>
+    </div>
+</div>
+
+<!-- METRICS CARDS -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Card 1 -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-start mb-2">
+            <p class="text-xs text-gray-500 font-semibold">TOTAL PATIENTS</p>
+            <i class="fa-solid fa-users text-gray-300"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800">{{ total_patients }}</h3>
+        <p class="text-xs text-green-600 mt-1"><i class="fa-solid fa-arrow-trend-up"></i> Registered in system</p>
+    </div>
+    <!-- Card 2 -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-start mb-2">
+            <p class="text-xs text-gray-500 font-semibold">TODAY'S VISITS</p>
+            <i class="fa-regular fa-calendar text-gray-300"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800">{{ todays_visits }}</h3>
+        <p class="text-xs text-gray-400 mt-1">Live queue additions</p>
+    </div>
+    <!-- Card 3 (Placeholder for Future Billing) -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-start mb-2">
+            <p class="text-xs text-gray-500 font-semibold">WEEKLY REVENUE</p>
+            <i class="fa-solid fa-money-bill-wave text-gray-300"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800">TSh 0</h3>
+        <p class="text-xs text-gray-400 mt-1">Today: TSh 0</p>
+    </div>
+    <!-- Card 4 (Placeholder for Future Pharmacy) -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-start mb-2">
+            <p class="text-xs text-gray-500 font-semibold">PENDING PAYMENTS</p>
+            <i class="fa-solid fa-file-invoice text-gray-300"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800">0</h3>
+        <p class="text-xs text-gray-400 mt-1">Pharmacy desk</p>
+    </div>
+</div>
+
+<!-- WAITING QUEUE TABLE -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6 mb-6">
+    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-semibold text-gray-800">Patients Waiting for Doctor</h3>
+        <span class="text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full font-bold">Live Queue</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+                    <th class="p-4 font-medium">Visit #</th>
+                    <th class="p-4 font-medium">Patient Name</th>
+                    <th class="p-4 font-medium">Status</th>
+                    <th class="p-4 font-medium">Time Arrived</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm divide-y divide-gray-100">
+                {% for visit in waiting_patients %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 text-gray-500">{{ visit.visit_number }}</td>
+                    <td class="p-4 font-medium text-gray-800">{{ visit.patient.name }} <br><span class="text-xs text-gray-400">{{ visit.patient.phone }}</span></td>
+                    <td class="p-4"><span class="flex items-center gap-1 text-orange-500 text-xs font-medium"><i class="fa-solid fa-circle text-[8px]"></i> {{ visit.status }}</span></td>
+                    <td class="p-4 text-gray-500 text-xs">{{ visit.created_at|date:"h:i A" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-8 text-center text-gray-400">
+                        <i class="fa-solid fa-bed text-2xl mb-2"></i>
+                        <p>Hakuna wagonjwa wanaosubiri Daktari kwa sasa.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- TODAY'S APPOINTMENTS PREVIEW -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mt-6">
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h3 class="font-semibold text-gray-800">Appointments Overview</h3>
+            <p class="text-xs text-gray-400">Manage scheduled visits</p>
+        </div>
+        <a href="{% url 'appointments_list' %}" class="text-xs text-gray-500 hover:text-[#0d5c35] font-semibold border px-3 py-1 rounded">View All & Book</a>
+    </div>
+    
+    <div class="text-center py-6 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+        <i class="fa-regular fa-calendar-check text-3xl mb-2 text-[#0d5c35]"></i>
+        <p class="text-sm">Click "View All & Book" to manage patient appointments.</p>
+    </div>
+</div>
+
+{% endblock %}

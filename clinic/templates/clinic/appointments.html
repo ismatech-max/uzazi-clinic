@@ -1,0 +1,63 @@
+{% extends 'clinic/base.html' %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- FOMU KUU YA KUWEKA MIADI -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
+        <h3 class="text-lg font-bold text-blue-600 mb-4"><i class="fa-regular fa-calendar-plus"></i> Weka Miadi Mpya</h3>
+        <form method="POST" action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-bold mb-2">Chagua Mgonjwa:</label>
+                <select name="patient_id" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-none focus:border-blue-600" required>
+                    <option value="">-- Chagua --</option>
+                    {% for p in patients %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 mb-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Tarehe:</label>
+                    <input type="date" name="date" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-none focus:border-blue-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Muda (Saa):</label>
+                    <input type="time" name="time" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-none focus:border-blue-600" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Hifadhi (19,000/= SMS)</button>
+        </form>
+    </div>
+
+    <!-- ORODHA NA FOMU YA KUBADILI TAREHE -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-4 border-b border-gray-100 bg-gray-50"><h3 class="font-bold text-gray-800">Miadi Iliyopo</h3></div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="text-xs text-gray-500 uppercase bg-white">
+                    <tr><th class="p-4 border-b">Tarehe & Muda</th><th class="p-4 border-b">Mgonjwa</th><th class="p-4 border-b">Simu</th><th class="p-4 border-b">Hatua (Kubadili Muda)</th></tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-gray-100">
+                    {% for app in appointments %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 font-bold text-gray-800">{{ app.appointment_date|date:"d M Y" }} <br><span class="text-xs text-blue-600">Saa: {{ app.appointment_time|time:"H:i" }}</span></td>
+                        <td class="p-4 font-medium text-gray-800">{{ app.patient.name }}</td>
+                        <td class="p-4 text-gray-600">{{ app.patient.phone }}</td>
+                        <td class="p-4">
+                            <form method="POST" action="{% url 'reschedule_appointment' app.id %}" class="flex gap-2 items-center">
+                                {% csrf_token %}
+                                <input type="date" name="new_date" class="border border-gray-300 p-1.5 rounded text-xs focus:outline-none focus:border-blue-600" required title="Tarehe Mpya">
+                                <input type="time" name="new_time" class="border border-gray-300 p-1.5 rounded text-xs focus:outline-none w-20 focus:border-blue-600" required title="Muda Mpya">
+                                <button type="submit" class="bg-gray-800 text-white px-3 py-1.5 rounded text-[10px] font-bold hover:bg-gray-900 transition shadow">Badili & Tuma SMS</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="p-8 text-center text-gray-400">Hakuna miadi yoyote kwa sasa.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
